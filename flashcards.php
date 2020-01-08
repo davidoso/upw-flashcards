@@ -23,15 +23,17 @@ createPDF($config, $excel);
 // Change author, creator, etc.
 
 /**
- * @param config            Associative array, contains 18 keys:
+ * @param config            Associative array, contains 20 keys:
     * @param outputName       Output PDF filename
  	  * @param outputMode       I: view on browser. D: download directly
  	  * @param bgFolder         Background template image folder. Default: flashcards_bg
 	  * @param rectWidth        Rounded rectangle border width. Default: 0.5
 	  * @param rectColor        Rounded rectangle and small squares border color (CMYK array)
+	  * @param rectRadio        Rounded rectangle corner radio, 0 means no rounded corner. Default: 2.4
 	  * @param imageColor       Main image border color (CMYK array)
-	  * @param barColor         Middle bar color (CMYK array)
-	  * @param squareColor      Small squares in middle bar color (CMYK array)
+	  * @param barColor         Middle bar background color (CMYK array)
+	  * @param squareColor      Small squares in middle bar background color (CMYK array)
+	  * @param squareFontColor  Small squares letter/text font color (CMYK array)
 	  * @param font             Title and body font. Default: dejavusans
     * @param fontColor        Title and body font color (CMYK array)
     * @param numberFont       Card number font. Default: helvetica
@@ -57,14 +59,16 @@ function createPDF($config, $excel) {
 		$outputMode = isset($config['outputMode']) ? $config['outputMode'] : 'I';
     $bgFolder = isset($config['bgFolder']) ? $config['bgFolder'] : 'flashcards_bg';
     $rectWidth = isset($config['rectWidth']) ? $config['rectWidth'] : 0.5;
-		$rectColor = isset($config['rectColor']) ? $config['rectColor'] : array(0, 0, 0, 78);       // CMYK
-		$imageColor = isset($config['imageColor']) ? $config['imageColor'] : array(0, 0, 0, 26);    // CMYK
-    $barColor = isset($config['barColor']) ? $config['barColor'] : array(40, 0, 1, 16);         // CMYK
-		$squareColor = isset($config['squareColor']) ? $config['squareColor'] : array(0, 0, 0, 26); // CMYK
+		$rectColor = isset($config['rectColor']) ? $config['rectColor'] : array(0, 0, 0, 78);
+		$rectRadio = isset($config['rectRadio']) ? $config['rectRadio'] : 2.4;
+		$imageColor = isset($config['imageColor']) ? $config['imageColor'] : array(0, 0, 0, 26);
+    $barColor = isset($config['barColor']) ? $config['barColor'] : array(40, 0, 1, 16);
+		$squareColor = isset($config['squareColor']) ? $config['squareColor'] : array(0, 0, 0, 26);
+		$squareFontColor = isset($config['squareFontColor']) ? $config['squareFontColor'] : array(75, 68, 67, 90);
 		$font = isset($config['font']) ? $config['font'] : 'dejavusans';
-    $fontColor = isset($config['fontColor']) ? $config['fontColor'] : array(0, 3, 3, 43);       // CMYK
+    $fontColor = isset($config['fontColor']) ? $config['fontColor'] : array(0, 3, 3, 43);
     $numberFont = isset($config['numberFont']) ? $config['numberFont'] : 'helvetica';
-    $numberColor = isset($config['numberColor']) ? $config['numberColor'] : array(0, 0, 0, 78); // CMYK
+    $numberColor = isset($config['numberColor']) ? $config['numberColor'] : array(0, 0, 0, 78);
 		$numberFontStyle = isset($config['numberFontStyle']) ? $config['numberFontStyle'] : '';
 		$numberFontSize = isset($config['numberFontSize']) ? $config['numberFontSize'] : 6;
 		$titleFontStyle = isset($config['titleFontStyle']) ? $config['titleFontStyle'] : 'B';
@@ -105,19 +109,13 @@ function createPDF($config, $excel) {
       $pdf->setPrintHeader(false);
       $pdf->setPrintFooter(false);
 
-      // TODO: Convert Imagick RGB to CMYK
-      // $image = __DIR__ . '/images/' . $data[$i][5];
-      // $image = __DIR__ .'/pig.jpg';
-      // $img = new Imagick($image);
-      // $img->transformImageColorspace(Imagick::COLORSPACE_CMYK);
-
       // Add custom border
       $bgImage = $bgFolder . '/' . $data[$i][11];
       $pdf->AddBackgroundImage($bgImage);
 
       // Add rounded rectangle
       $pdf->SetLineStyle(array('width' => $rectWidth, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $rectColor));
-      $pdf->RoundedRect(9.2, 8, 52, 7, 2.4, '1111', '');
+      $pdf->RoundedRect(9.2, 8, 52, 7, $rectRadio, '1111', '');
 
       // Add card category
       $pdf->SetFont($font, $titleFontStyle, $titleFontSize);
@@ -142,10 +140,10 @@ function createPDF($config, $excel) {
       $pdf->SetXY(6.9, 50.6);
       $pdf->Cell(56.5, 7.2, '', 'LR', 0, 'C', 1);
 
-      // Add midddle squares
+      // Add 5 middle squares. If input data is empty, then no square is added
       $pdf->SetLineStyle(array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $rectColor));
       $pdf->SetFillColor($squareColor[0], $squareColor[1], $squareColor[2], $squareColor[3]);
-      $pdf->SetTextColor(0, 0, 0);
+      $pdf->SetTextColor($squareFontColor[0], $squareFontColor[1], $squareFontColor[2], $squareFontColor[3]);
       $x = 11.23;
       $distance = 10.5;
       $str = '';
