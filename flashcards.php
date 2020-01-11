@@ -11,16 +11,17 @@ require_once('../upwork-pdf-form/tcpdf/tcpdf_include.php');
 require_once('../upwork-pdf-form/tcpdf/tcpdf_bg_image.php');
 // PHP library to fetch data from a spreadsheet
 require_once('../upwork-xls-to-mysql/XLSXReader.php');
+// Imagick script to convert input RGB image (main) to CMYK (main_cmyk)
+require_once('rgb_to_cmyk.php');
 
 // NOTE: Example how to call script and customize input parameters
-$config = array("outputName" => "Aboriginal_Canadians_Flashcards.png");
+$config = array("outputName" => "Aboriginal_Canadians_Flashcards.pdf");
 $excel = array("excelFile" => "Sample Data.xlsx", "sheetName" => "Sheet1");
 createPDF($config, $excel);
 
 // TODO:
-// Change TCPDF config.php: 69.85, 95.25
+// Change TCPDF config.php: 69.85, 95.25 (page size) and also author, creator, etc.
 // Change array() to PDF_PAGE_FORMAT on new MYPDF()
-// Change author, creator, etc.
 
 /**
  * @param config            Associative array, contains 20 keys:
@@ -105,84 +106,87 @@ function createPDF($config, $excel) {
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
     for($i = 1; $i < count($data); $i++) { // First row on sheet contains column names
-      $pdf->AddPage();
-      $pdf->setPrintHeader(false);
-      $pdf->setPrintFooter(false);
+      $image = $data[$i][5];
+      // If the image was successfully converted to CMYK, add a page, otherwise PDF deck will skip current card
+      if(convertRGBtoCMYK($image)) {
+        $pdf->AddPage();
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
 
-      // Add custom border
-      $bgImage = $bgFolder . '/' . $data[$i][11];
-      $pdf->AddBackgroundImage($bgImage);
+        // Add custom border
+        $bgImage = $bgFolder . '/' . $data[$i][11];
+        $pdf->AddBackgroundImage($bgImage);
 
-      // Add rounded rectangle
-      $pdf->SetLineStyle(array('width' => $rectWidth, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $rectColor));
-      $pdf->RoundedRect(9.2, 8, 52, 7, $rectRadio, '1111', '');
+        // Add rounded rectangle
+        $pdf->SetLineStyle(array('width' => $rectWidth, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $rectColor));
+        $pdf->RoundedRect(9.2, 8, 52, 7, $rectRadio, '1111', '');
 
-      // Add card category
-      $pdf->SetFont($font, $titleFontStyle, $titleFontSize);
-      $pdf->SetTextColor($fontColor[0], $fontColor[1], $fontColor[2], $fontColor[3]);
-      $pdf->SetXY(9.2, 8);
-      $pdf->Cell(52, 7, $data[$i][1], 0, 0, 'C', 0);
+        // Add card category
+        $pdf->SetFont($font, $titleFontStyle, $titleFontSize);
+        $pdf->SetTextColor($fontColor[0], $fontColor[1], $fontColor[2], $fontColor[3]);
+        $pdf->SetXY(9.2, 8);
+        $pdf->Cell(52, 7, $data[$i][1], 0, 0, 'C', 0);
 
-      // Add card number
-      $pdf->SetFont($numberFont, $numberFontStyle, $numberFontSize);
-      $pdf->SetTextColor($numberColor[0], $numberColor[1], $numberColor[2], $numberColor[3]);
-      $pdf->SetXY(54, 8.5);
-      $pdf->Cell(5, 0, $data[$i][0], 0, 0, 'L', 0);
+        // Add card number
+        $pdf->SetFont($numberFont, $numberFontStyle, $numberFontSize);
+        $pdf->SetTextColor($numberColor[0], $numberColor[1], $numberColor[2], $numberColor[3]);
+        $pdf->SetXY(54, 8.5);
+        $pdf->Cell(5, 0, $data[$i][0], 0, 0, 'L', 0);
 
-      // Add card main image (must be JPG)
-      $pdf->SetXY(9, 16.4);
-      $pdf->SetDrawColor($imageColor[0], $imageColor[1], $imageColor[2], $imageColor[3]);
-      $pdf->Image('images/main/' . $data[$i][5], $pdf->GetX(), $pdf->GetY(), 52.3, 33, 'JPG', '', '', false, 300, '', false, false, 1, false, false, false);
+        // Add card main image (must be JPG)
+        $pdf->SetXY(9, 16.4);
+        $pdf->SetDrawColor($imageColor[0], $imageColor[1], $imageColor[2], $imageColor[3]);
+        $pdf->Image('images/main_cmyk/' . $data[$i][5], $pdf->GetX(), $pdf->GetY(), 52.3, 33, 'JPG', '', '', false, 300, '', false, false, 1, false, false, false);
 
-      // Add middle bar
-      $pdf->SetFillColor($barColor[0], $barColor[1], $barColor[2], $barColor[3]);
-      $pdf->SetDrawColor(0, 0, 0, 26); // Light gray border left and right the middle bar (to resemble shadow)
-      $pdf->SetXY(6.9, 50.6);
-      $pdf->Cell(56.5, 7.2, '', 'LR', 0, 'C', 1);
+        // Add middle bar
+        $pdf->SetFillColor($barColor[0], $barColor[1], $barColor[2], $barColor[3]);
+        $pdf->SetDrawColor(0, 0, 0, 26); // Light gray border left and right the middle bar (to resemble shadow)
+        $pdf->SetXY(6.9, 50.6);
+        $pdf->Cell(56.5, 7.2, '', 'LR', 0, 'C', 1);
 
-      // Add 5 middle squares. If input data is empty, then no square is added
-      $pdf->SetLineStyle(array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $rectColor));
-      $pdf->SetFillColor($squareColor[0], $squareColor[1], $squareColor[2], $squareColor[3]);
-      $pdf->SetTextColor($squareFontColor[0], $squareFontColor[1], $squareFontColor[2], $squareFontColor[3]);
-      $x = 11.23;
-      $distance = 10.5;
-      $str = '';
-      $strLen = 0;
-      for($j = 6; $j < 11; $j++) { // "square1" columns starts at 6 on Excel file
-        $str = $data[$i][$j];
-        $strLen = strlen($str);
-        if($strLen > 0) {
-          $pdf->RoundedRect($x, 51.3, 5.8, 5.8, 1, '1111', 'DF'); // Add square background
-          if(strpos($str, '.' ) !== false)                        // Icon filepaths contain "."
-            $pdf->Image('images/icons/' . $str, $x + 0.7, 52.3, 4, 4, 'PNG', '', '', false, 300, '', false, false, 1, false, false, false);
-          else {                                                  // Otherwise square contents is a letter/text
-            $pdf->SetXY($x, 51.3);
-            switch($strLen) {
-              case 1:
-              case 2:
-                $pdf->SetFont('helvetica', '', 9);
-                $pdf->Cell(5.8, 5.8, $str, 0, 0, 'C', 0);
-                break;
-              default:                                            // Add only first 3 characters for long strings
-                $pdf->SetFont('helvetica', '', 7);
-                $pdf->Cell(5.8, 5.8, substr($str, 0, 3), 0, 0, 'C', 0);
+        // Add 5 middle squares. If input data is empty, then no square is added
+        $pdf->SetLineStyle(array('width' => 0.1, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => $rectColor));
+        $pdf->SetFillColor($squareColor[0], $squareColor[1], $squareColor[2], $squareColor[3]);
+        $pdf->SetTextColor($squareFontColor[0], $squareFontColor[1], $squareFontColor[2], $squareFontColor[3]);
+        $x = 11.23;
+        $distance = 10.5;
+        $str = '';
+        $strLen = 0;
+        for($j = 6; $j < 11; $j++) { // "square" columns start at 6 on Excel file
+          $str = $data[$i][$j];
+          $strLen = strlen($str);
+          if($strLen > 0) {
+            $pdf->RoundedRect($x, 51.3, 5.8, 5.8, 1, '1111', 'DF'); // Add square background
+            if(strpos($str, '.' ) !== false)                        // Icon filepaths contain "."
+              $pdf->Image('images/icons/' . $str, $x + 0.7, 52.3, 4, 4, 'PNG', '', '', false, 300, '', false, false, 1, false, false, false);
+            else {                                                  // Otherwise square contents is a letter/text
+              $pdf->SetXY($x, 51.3);
+              switch($strLen) {
+                case 1:
+                case 2:
+                  $pdf->SetFont('helvetica', '', 9);
+                  $pdf->Cell(5.8, 5.8, $str, 0, 0, 'C', 0);
+                  break;
+                default:                                            // Add first 3 characters for long strings
+                  $pdf->SetFont('helvetica', '', 7);
+                  $pdf->Cell(5.8, 5.8, substr($str, 0, 3), 0, 0, 'C', 0);
+              }
             }
           }
+          $x += $distance;
         }
-        $x += $distance;
+
+        // Add card body (3 strings)
+        $pdf->SetFont($font, $bodyFontStyle, $bodyFontSize);
+        $pdf->SetTextColor($fontColor[0], $fontColor[1], $fontColor[2], $fontColor[3]);
+        $pdf->SetXY(7.05, 61);
+        $pdf->Cell(56.35, 7, $data[$i][2], 0, 0, 'C', 0);
+        $pdf->SetXY(7.05, 70);
+        $pdf->Cell(56.35, 7, $data[$i][3], 0, 0, 'C', 0);
+        $pdf->SetXY(7.05, 79);
+        $pdf->Cell(56.35, 7, $data[$i][4], 0, 0, 'C', 0);
       }
-
-      // Add card body (3 strings)
-      $pdf->SetFont($font, $bodyFontStyle, $bodyFontSize);
-      $pdf->SetTextColor($fontColor[0], $fontColor[1], $fontColor[2], $fontColor[3]);
-      $pdf->SetXY(7.05, 61);
-      $pdf->Cell(56.35, 7, $data[$i][2], 0, 0, 'C', 0);
-      $pdf->SetXY(7.05, 70);
-      $pdf->Cell(56.35, 7, $data[$i][3], 0, 0, 'C', 0);
-      $pdf->SetXY(7.05, 79);
-      $pdf->Cell(56.35, 7, $data[$i][4], 0, 0, 'C', 0);
     }
-
     // Close and output PDF document
 		$pdf->Output($outputName, $outputMode);
   }

@@ -1,0 +1,6 @@
+Icons
+https://icons8.com/icons/set/scissors
+https://mapicons.mapsmarker.com
+
+Convert image from RGB to CMYK (.tiff)
+https://www.rgb2cmyk.org
