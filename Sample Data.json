@@ -1,0 +1,161 @@
+{
+  "Sheet1": [
+    {
+      "card_number": "001",
+      "category": "Animals",
+      "text 1": "pig",
+      "text 2": "kōgos",
+      "text 3": "ᑰᑯᐢ",
+      "main_image": "pig.jpg",
+      "square 1": "rock.png",
+      "square 2": "scissors.png",
+      "square 3": "N",
+      "border": "terra_orange.jpg"
+    },
+    {
+      "card_number": "002",
+      "category": "Animals",
+      "text 1": "bear",
+      "text 2": "maskwā",
+      "text 3": "ᒪᐢᒁ",
+      "main_image": "bear.jpg",
+      "square 1": "scissors.png",
+      "square 2": "paper.png",
+      "square 3": "N",
+      "square 4": "36",
+      "border": "terra_green.jpg"
+    },
+    {
+      "card_number": "003",
+      "category": "Animals",
+      "text 1": "bird",
+      "text 2": "pinēsīs",
+      "text 3": "ᐱᓀᓰᐢ",
+      "main_image": "bird.jpg",
+      "square 3": "N",
+      "square 5": "paper.png",
+      "border": "terra_blue.jpg"
+    },
+    {
+      "card_number": "004",
+      "category": "Insects",
+      "text 1": "butterfly",
+      "text 2": "kamāmak",
+      "text 3": "ᑲᒫᒪᐠ",
+      "main_image": "butterfly.jpg",
+      "square 3": "N",
+      "square 5": "rock.png",
+      "border": "terra_blue.jpg"
+    },
+    {
+      "card_number": "005",
+      "category": "Animals",
+      "text 1": "cat",
+      "text 2": "minōs",
+      "text 3": "ᒥᓅᐢ",
+      "main_image": "cat.jpg",
+      "square 1": "scissors.png",
+      "square 3": "N",
+      "border": "terra_purple.jpg"
+    },
+    {
+      "card_number": "006",
+      "category": "Animals",
+      "text 1": "chicken",
+      "text 2": "pāgahāgwan",
+      "text 3": "ᐹᑲᐦᐋᑿᐣ",
+      "main_image": "chicken.jpg",
+      "square 1": "paper.png",
+      "square 3": "N",
+      "square 5": "scissors.png",
+      "border": "terra_orange.jpg"
+    },
+    {
+      "card_number": "007",
+      "category": "Animals",
+      "text 1": "cow",
+      "text 2": "mostos",
+      "text 3": "ᒧᐢᑐᐢ",
+      "main_image": "cow.jpg",
+      "square 1": "rock.png",
+      "square 3": "V",
+      "square 5": "paper.png",
+      "border": "terra_orange.jpg"
+    },
+    {
+      "card_number": "008",
+      "category": "Animals",
+      "text 1": "dog",
+      "text 2": "atim",
+      "text 3": "ᐊᑎᒼ",
+      "main_image": "dog.jpg",
+      "square 1": "scissors.png",
+      "square 3": "V",
+      "square 5": "rock.png",
+      "border": "terra_purple.jpg"
+    },
+    {
+      "card_number": "009",
+      "category": "Animals",
+      "text 1": "donkey",
+      "text 2": "sōsōatim",
+      "text 3": "ᓲᓲᐊᑎᒼ",
+      "main_image": "donkey.jpg",
+      "square 1": "paper.png",
+      "square 2": "rock.png",
+      "square 3": "C",
+      "border": "terra_orange.jpg"
+    },
+    {
+      "card_number": "010",
+      "category": "Animals",
+      "text 1": "duck",
+      "text 2": "sīsīp",
+      "text 3": "ᓰᓰᑊ",
+      "main_image": "duck.jpg",
+      "square 1": "rock.png",
+      "square 2": "paper.png",
+      "square 3": "N",
+      "square 4": "20",
+      "border": "terra_blue.jpg"
+    },
+    {
+      "card_number": "011",
+      "category": "Animals",
+      "text 1": "eagle",
+      "text 2": "kihēw",
+      "text 3": "ᑭᐦᐁᐤ",
+      "main_image": "eagle.jpg",
+      "square 1": "scissors.png",
+      "square 3": "N",
+      "border": "terra_orange.jpg"
+    },
+    {
+      "card_number": "012",
+      "category": "Animals",
+      "text 1": "mouse",
+      "text 2": "wāpagosīs",
+      "text 3": "ᐚᐸᑯᓰᐢ",
+      "main_image": "mouse.jpg",
+      "square 1": "paper.png",
+      "square 2": "ABC",
+      "square 3": "N",
+      "square 4": "40",
+      "square 5": "3Y",
+      "border": "terra_green.jpg"
+    },
+    {
+      "card_number": "013",
+      "category": "Animals",
+      "text 1": "rabbit",
+      "text 2": "wāpos",
+      "text 3": "ᐚᐳᐢ",
+      "main_image": "rabbit.jpg",
+      "square 1": "rock.png",
+      "square 2": "XYZ",
+      "square 3": "N",
+      "square 5": "4Z",
+      "border": "terra_green.jpg"
+    }
+  ]
+}

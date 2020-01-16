@@ -1,0 +1,4 @@
+1. Copy "tcpdf" folder from "upwork-pdf-form/tcpdf" to this project folder
+2. Replace config/tcpdf_config.php with a config file created for this project
+3. Customize PDF_CONSTANTS
+4. You could change K_PATH_IMAGES and use "images" folder on root instead of "tcpdf/images"

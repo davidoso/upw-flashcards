@@ -1,6 +1,16 @@
-Icons
+1. Download PNG icons
 https://icons8.com/icons/set/scissors
 https://mapicons.mapsmarker.com
 
-Convert image from RGB to CMYK (.tiff)
+
+2. Convert PNG icons to TIFF
+https://convertio.co
+
+
+3. Convert main card image from RGB to CMYK
+This is not recommended because converted TIFF size is around 5MB, which generates a very heavy PDF
 https://www.rgb2cmyk.org
+
+
+4. Convert XLSX to JSON
+https://kinoar.github.io/xlsx-to-json

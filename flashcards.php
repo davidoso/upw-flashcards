@@ -14,20 +14,18 @@ require_once('../upwork-xls-to-mysql/XLSXReader.php');
 // Imagick script to convert input RGB image (main) to CMYK (main_cmyk)
 require_once('rgb_to_cmyk.php');
 
+// NOTE: PDF_PAGE_FORMAT should be instead of array(69.85, 95.25). Check "How to include TCPDF.txt" note
 // NOTE: Example how to call script and customize input parameters
 $config = array("outputName" => "Aboriginal_Canadians_Flashcards.pdf");
 $excel = array("excelFile" => "Sample Data.xlsx", "sheetName" => "Sheet1");
 createPDF($config, $excel);
 
-// TODO:
-// Change TCPDF config.php: 69.85, 95.25 (page size) and also author, creator, etc.
-// Change array() to PDF_PAGE_FORMAT on new MYPDF()
 
 /**
  * @param config            Associative array, contains 20 keys:
     * @param outputName       Output PDF filename
- 	  * @param outputMode       I: view on browser. D: download directly
- 	  * @param bgFolder         Background template image folder. Default: flashcards_bg
+    * @param outputMode       I: view on browser. D: download directly
+ 	  * @param cardBack         Add this as a background image to use as a card back
 	  * @param rectWidth        Rounded rectangle border width. Default: 0.5
 	  * @param rectColor        Rounded rectangle and small squares border color (CMYK array)
 	  * @param rectRadio        Rounded rectangle corner radio, 0 means no rounded corner. Default: 2.4
@@ -58,7 +56,7 @@ function createPDF($config, $excel) {
     // Config parameters
     $outputName = isset($config['outputName']) ? $config['outputName'] : 'Cards.pdf';
 		$outputMode = isset($config['outputMode']) ? $config['outputMode'] : 'I';
-    $bgFolder = isset($config['bgFolder']) ? $config['bgFolder'] : 'flashcards_bg';
+    $cardBack = isset($config['cardBack']) ? $config['cardBack'] : 'card_back.jpg';
     $rectWidth = isset($config['rectWidth']) ? $config['rectWidth'] : 0.5;
 		$rectColor = isset($config['rectColor']) ? $config['rectColor'] : array(0, 0, 0, 78);
 		$rectRadio = isset($config['rectRadio']) ? $config['rectRadio'] : 2.4;
@@ -75,7 +73,14 @@ function createPDF($config, $excel) {
 		$titleFontStyle = isset($config['titleFontStyle']) ? $config['titleFontStyle'] : 'B';
 		$titleFontSize = isset($config['titleFontSize']) ? $config['titleFontSize'] : 12;
 		$bodyFontStyle = isset($config['bodyFontStyle']) ? $config['bodyFontStyle'] : 'B';
-		$bodyFontSize = isset($config['bodyFontSize']) ? $config['bodyFontSize'] : 14;
+    $bodyFontSize = isset($config['bodyFontSize']) ? $config['bodyFontSize'] : 14;
+
+    // Image folder paths on "images/"
+    $bgFolder = 'flashcards_bg/';
+    $bgFolderCMYK = 'flashcards_bg_cmyk/';
+    $mainFolder = 'main/';
+    $mainFolderCMYK = 'main_cmyk/';
+    $iconFolder = 'icons/';
 
     // Create new PDF document
     $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, array(69.85, 95.25), true, 'UTF-8', false);
@@ -105,16 +110,30 @@ function createPDF($config, $excel) {
     // Set image scale factor
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
+    // Convert all border images to CMYK
+    if($bg = opendir(__DIR__ . '/images/' . $bgFolder)) {
+      while(($image = readdir($bg)) !== false) {
+        convertRGBtoCMYK($image, $bgFolder, $bgFolderCMYK);
+      }
+      closedir($bg);
+    }
+
     for($i = 1; $i < count($data); $i++) { // First row on sheet contains column names
       $image = $data[$i][5];
       // If the image was successfully converted to CMYK, add a page, otherwise PDF deck will skip current card
-      if(convertRGBtoCMYK($image)) {
+      if(convertRGBtoCMYK($image, $mainFolder, $mainFolderCMYK)) {
+        // Add card back (emtpy page)
         $pdf->AddPage();
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
+        $bgImage = $bgFolderCMYK . $cardBack;
+        $pdf->AddBackgroundImage($bgImage);
 
-        // Add custom border
-        $bgImage = $bgFolder . '/' . $data[$i][11];
+        // Add card face (a custom border template to fill in values)
+        $pdf->AddPage();
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
+        $bgImage = $bgFolderCMYK . $data[$i][11];
         $pdf->AddBackgroundImage($bgImage);
 
         // Add rounded rectangle
@@ -136,7 +155,7 @@ function createPDF($config, $excel) {
         // Add card main image (must be JPG)
         $pdf->SetXY(9, 16.4);
         $pdf->SetDrawColor($imageColor[0], $imageColor[1], $imageColor[2], $imageColor[3]);
-        $pdf->Image('images/main_cmyk/' . $data[$i][5], $pdf->GetX(), $pdf->GetY(), 52.3, 33, 'JPG', '', '', false, 300, '', false, false, 1, false, false, false);
+        $pdf->Image('images/' . $mainFolderCMYK . $data[$i][5], $pdf->GetX(), $pdf->GetY(), 52.3, 33, 'JPG', '', '', false, 300, '', false, false, 1, false, false, false);
 
         // Add middle bar
         $pdf->SetFillColor($barColor[0], $barColor[1], $barColor[2], $barColor[3]);
@@ -157,9 +176,9 @@ function createPDF($config, $excel) {
           $strLen = strlen($str);
           if($strLen > 0) {
             $pdf->RoundedRect($x, 51.3, 5.8, 5.8, 1, '1111', 'DF'); // Add square background
-            if(strpos($str, '.' ) !== false)                        // Icon filepaths contain "."
-              $pdf->Image('images/icons/' . $str, $x + 0.7, 52.3, 4, 4, 'PNG', '', '', false, 300, '', false, false, 1, false, false, false);
-            else {                                                  // Otherwise square contents is a letter/text
+            if(strpos($str, '.' ) !== false) // Icons contain a file extension: "."
+              $pdf->Image('images/' . $iconFolder . $str, $x + 0.7, 52.3, 4, 4, 'PNG', '', '', false, 300, '', false, false, 1, false, false, false);
+            else { // Otherwise square contents is a letter/text
               $pdf->SetXY($x, 51.3);
               switch($strLen) {
                 case 1:
@@ -167,7 +186,7 @@ function createPDF($config, $excel) {
                   $pdf->SetFont('helvetica', '', 9);
                   $pdf->Cell(5.8, 5.8, $str, 0, 0, 'C', 0);
                   break;
-                default:                                            // Add first 3 characters for long strings
+                default: // Add first 3 characters for long strings
                   $pdf->SetFont('helvetica', '', 7);
                   $pdf->Cell(5.8, 5.8, substr($str, 0, 3), 0, 0, 'C', 0);
               }

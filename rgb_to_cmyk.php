@@ -1,11 +1,9 @@
 <?php
 // header("Content-Type: image/jpg");
 
-function convertRGBtoCMYK($image) {
+function convertRGBtoCMYK($image, $rgb_folder, $cmyk_folder) {
   try {
-    $rgb_folder = 'main';
-    $cmyk_folder = 'main_cmyk';
-    $image_filepath = __DIR__ . '/images/' . $rgb_folder . '/' . $image;
+    $image_filepath = __DIR__ . '/images/' . $rgb_folder . $image;
     $i = new Imagick($image_filepath);
 
     if($i->getImageColorSpace() == 13 || $i->getImageColorSpace() == 1) {
@@ -26,7 +24,7 @@ function convertRGBtoCMYK($image) {
     $i->setImageUnits(imagick::RESOLUTION_PIXELSPERINCH);
     $i->setImageResolution(300, 300);
     // $i->setImageFormat('tiff');
-    $i->writeImage(__DIR__ . '/images/' . $cmyk_folder . '/' . $image);
+    $i->writeImage(__DIR__ . '/images/' . $cmyk_folder . $image);
 
     // To output the image on a web browser: uncomment following line and header(), and call convertRGBtoCMYK()
     // echo $i->getImageBlob();
