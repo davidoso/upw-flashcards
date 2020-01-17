@@ -16,6 +16,7 @@ require_once('rgb_to_cmyk.php');
 
 // NOTE: PDF_PAGE_FORMAT should be instead of array(69.85, 95.25). Check "How to include TCPDF.txt" note
 // NOTE: Example how to call script and customize input parameters
+// $config array could be empty but $excel['excelFile'] and $excel['sheetName'] is required
 $config = array("outputName" => "Aboriginal_Canadians_Flashcards.pdf");
 $excel = array("excelFile" => "Sample Data.xlsx", "sheetName" => "Sheet1");
 createPDF($config, $excel);
