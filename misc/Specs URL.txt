@@ -1,11 +1,8 @@
-Preparing Your Cards | All Specs, Tutorials, and Templates
-
 InDesign or Illustrator are your best file-prep options. You might also consider the free layout program, Scribus.
 
 For a host of reasons, we suggest you do not use Microsoft Word. You also shouldn't use Photoshop on its own. (When used in tandem with InDesign, Photoshop will help yield quality results. When used alone, text oftentimes will not print as clearly as desired and it will not export PDFs to spec.)
 
 Printing Specifications
-
     Printed Poker Cards (US and Euro)
     Printed US Bridge Cards
     Printed Mini Cards
@@ -15,4 +12,14 @@ Printing Specifications
     Printed 8.5" x 11" Pages
     Printed 12" x 18" Small Poster
 
+Card Printing. Preparing Your Cards | All Specs, Tutorials, and Templates
 https://onebookshelfpublisherservice.zendesk.com/hc/en-us/articles/227867727
+
+The PDF/X-1a file format
+https://www.prepressure.com/pdf/basics/pdfx-1a
+
+The PDF page boxes: Mediabox, Cropbox, Bleedbox, Trimbox & Artbox
+https://www.prepressure.com/pdf/basics/page-boxes
+
+What are Mediabox, Trimbox, Bleedbox, Artbox in a PDF file (GREAT EXPLANATION)
+https://www.youtube.com/watch?v=Wn8d2COkr98

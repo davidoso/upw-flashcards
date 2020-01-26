@@ -1,0 +1,11 @@
+2 specs missing to meet the PDF/X-1a:2003 standard. K W keeps annoying me about it and says the whole script is useless.
+
+I already knew I'd need to change the script but after he treated me like shit there's no point of coding these, beside there are a few things as "output intent" and flags I can't simply create with TCPDF. So even tho I'll complete the following 2 specs, it'd likely be a waste of time.
+
+Missing Changes:
+1. Change PNG icons to JPG to remove transparency and convert to CMYK just as the border and main card images.
+Note: Imagick converts to CMYK and sets an icc profile to all images, text, and shapes colors on the PDF. However, the profile can't be assigned to the whole file and apparently that's what K W wants. He should try this: https://www.pdf2cmyk.com and select default SWOP2006 profile.
+
+2. Add page boxes (Mediabox, Trimbox, Bleedbox) based on this example: https://tcpdf.org/examples/example_060. This will add extra operators so you see these boxes when you select "Crop page" on a PDF viewer.
+
+If he wasn't such a MEGA-AWFUL client, I'd do complete these tasks but I don't want to lose any more time with him.
